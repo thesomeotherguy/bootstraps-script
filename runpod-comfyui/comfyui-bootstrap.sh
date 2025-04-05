@@ -4,6 +4,7 @@ set -e  # Exit on error
 set -o pipefail
 
 echo "[INFO] Setting working directory permissions and switching to /internalworkspace"
+mkdir -p /internalworkspace
 cd /internalworkspace
 chmod -R 755 /internalworkspace
 
