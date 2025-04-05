@@ -19,6 +19,11 @@ echo "[INFO] Updating PATH for uv..."
 export PATH="$HOME/.local/bin:$PATH"
 hash -r
 
+echo "[INFO] Installing Python 3.12 using uv and setting up virtual environment..."
+uv python install 3.12
+uv venv --python 3.12
+source .venv/bin/activate
+
 echo "[INFO] Installing Hugging Face CLI and setting up authentication..."
 uv pip install --upgrade huggingface_hub
 uv pip install 'huggingface_hub[cli]' 'huggingface_hub[hf_transfer]'
@@ -53,7 +58,14 @@ tar -I 'zstd -T0' -xf comfyui.tar.zst
 echo "[INFO] Cleaning up..."
 rm comfyui.tar.zst
 
+##################
+deactivate
+cd /internalworkspace
+rm -rf /internalworkspace/.venv
 mv /internalworkspace/ComfyUI/.venv /internalworkspace/.venv
+uv pip install --upgrade huggingface_hub
+uv pip install 'huggingface_hub[cli]' 'huggingface_hub[hf_transfer]'
+##################
 
 echo "[INFO] Creating run script in /workspace..."
 mkdir -p /workspace
