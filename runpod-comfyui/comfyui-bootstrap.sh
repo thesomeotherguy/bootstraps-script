@@ -55,9 +55,9 @@ source .venv/bin/activate
 uv pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu126
 uv pip install -r ComfyUI/requirements.txt
 uv pip install -r ComfyUI/custom_nodes/comfyui-manager/requirements.txt
-uv pip install dlib insightface
-uv pip uninstall onnxruntime onnxruntime-gpu
-uv pip install onnxruntime-gpu --extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/
+# uv pip install dlib insightface
+# uv pip uninstall onnxruntime onnxruntime-gpu
+# uv pip install onnxruntime-gpu --extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/
 
 echo "[INFO] Creating run script in /workspace..."
 mkdir -p /workspace
@@ -107,13 +107,13 @@ snapshot_download(
 print(f"[INFO] Repo downloaded directly to: {local_dir}")
 EOF
 
-echo "[INFO] Downloading private Hugging Face model using hf_transfer..."
-python /internalworkspace/download-hf.py
+# echo "[INFO] Downloading private Hugging Face model using hf_transfer..."
+# python /internalworkspace/download-hf.py
 
-echo "[INFO] Organizing model directory..."
-rm -rf /internalworkspace/ComfyUI/models
-mv /internalworkspace/for-runpod-deploy/comfyui-models-folder /internalworkspace/ComfyUI/models
-rm -rf /internalworkspace/for-runpod-deploy/comfyui-models-folder
+# echo "[INFO] Organizing model directory..."
+# rm -rf /internalworkspace/ComfyUI/models
+# mv /internalworkspace/for-runpod-deploy/comfyui-models-folder /internalworkspace/ComfyUI/models
+# rm -rf /internalworkspace/for-runpod-deploy/comfyui-models-folder
 
 echo "[INFO] Bootstrap completed. Deactivating virtual environment..."
 deactivate
