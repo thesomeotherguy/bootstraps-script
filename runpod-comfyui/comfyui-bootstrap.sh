@@ -39,14 +39,8 @@ chmod +x .venv/lib/python3.12/site-packages/pip/__main__.py
 
 echo "[INFO] Installing Hugging Face CLI and setting up authentication..."
 uv pip install --upgrade huggingface_hub
-uv pip install 'huggingface_hub[cli]'
+uv pip install 'huggingface_hub[cli]' 'huggingface_hub[hf_transfer]'
 git config --global credential.helper store
-
-# About Hugging Face token
-# It's set on .env or orchestrator like RunPod before deploying pods
-
-# Optional CLI login (if needed)
-# echo $HUGGINGFACE_TOKEN | huggingface-cli login --token --stdin
 
 echo "[INFO] Cloning ComfyUI repository..."
 git clone https://github.com/comfyanonymous/ComfyUI.git
@@ -72,13 +66,55 @@ cat << 'EOF' > /workspace/run_gpu.sh
 cd /internalworkspace
 source .venv/bin/activate
 cd ComfyUI
-python main.py --preview-method auto
+python main.py --listen --preview-method auto
 EOF
 chmod +x /workspace/run_gpu.sh
 
 echo "[INFO] Creating input/output symlinks in /workspace..."
 ln -sfn /internalworkspace/ComfyUI/input /workspace/input
 ln -sfn /internalworkspace/ComfyUI/output /workspace/output
+mkdir -p /internalworkspace/ComfyUI/user/default/workflows
+ln -sfn /internalworkspace/ComfyUI/user/default/workflows /workspace/workflows
+
+# Optional CLI login (if needed)
+# echo $HUGGINGFACE_TOKEN | huggingface-cli login --token --stdin
+# About Hugging Face token
+# It's set on .env or orchestrator like RunPod before deploying pods
+
+echo "[INFO] Enabling hf_transfer for faster Hugging Face downloads (temporary)..."
+export HF_HUB_ENABLE_HF_TRANSFER=1
+echo "[INFO] Making hf_transfer persistent across reboots/shells..."
+echo 'export HF_HUB_ENABLE_HF_TRANSFER=1' >> ~/.bashrc
+
+echo "[INFO] Creating script to download model from Hugging Face..."
+cat << 'EOF' > /internalworkspace/download-hf.py
+from huggingface_hub import snapshot_download
+import os
+
+repo_id = "thesomeotherguy/for-runpod-deploy"
+token = os.getenv("HUGGINGFACE_TOKEN")
+local_dir = "./for-runpod-deploy"
+repo_type = "model"
+
+snapshot_download(
+    repo_id=repo_id,
+    repo_type=repo_type,
+    token=token,
+    local_dir=local_dir,
+    ignore_patterns=["*.py", "*.md", "*.sh"],
+)
+
+print(f"[INFO] Repo downloaded directly to: {local_dir}")
+EOF
+
+echo "[INFO] Downloading private Hugging Face model using hf_transfer..."
+python /internalworkspace/download-hf.py
+
+echo "[INFO] Organizing model directory..."
+rm -rf /internalworkspace/ComfyUI/models
+mkdir -p /internalworkspace/ComfyUI/models
+mv /internalworkspace/for-runpod-deploy/comfyui-models-folder/* /internalworkspace/ComfyUI/models/
+rm -rf /internalworkspace/for-runpod-deploy/comfyui-models-folder
 
 echo "[INFO] Bootstrap completed. Deactivating virtual environment..."
 deactivate
