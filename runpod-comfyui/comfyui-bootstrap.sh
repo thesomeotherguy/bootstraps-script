@@ -35,8 +35,8 @@ EOF
 chmod +x .venv/lib/python3.12/site-packages/pip/__main__.py
 
 echo "[INFO] Installing Hugging Face CLI and setting up authentication..."
-pip install --upgrade huggingface_hub
-pip install 'huggingface_hub[cli]'
+uv pip install --upgrade huggingface_hub
+uv pip install 'huggingface_hub[cli]'
 git config --global credential.helper store
 
 # About Hugging Face token
@@ -83,12 +83,12 @@ git clone https://github.com/ltdrdata/ComfyUI-Manager comfyui-manager
 echo "[INFO] Installing Python dependencies..."
 cd /internalworkspace
 source .venv/bin/activate
-pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu126
-pip install -r ComfyUI/requirements.txt
-pip install -r ComfyUI/custom_nodes/comfyui-manager/requirements.txt
-pip install dlib insightface
-pip uninstall -y onnxruntime onnxruntime-gpu
-pip install onnxruntime-gpu --extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/
+uv pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu126
+uv pip install -r ComfyUI/requirements.txt
+uv pip install -r ComfyUI/custom_nodes/comfyui-manager/requirements.txt
+uv pip install dlib insightface
+uv pip uninstall -y onnxruntime onnxruntime-gpu
+uv pip install onnxruntime-gpu --extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/
 
 echo "[INFO] Creating run script in /workspace..."
 mkdir -p /workspace
