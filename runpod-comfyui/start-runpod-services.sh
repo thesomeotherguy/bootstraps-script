@@ -5,7 +5,7 @@ set -o pipefail
 
 echo "[INFO] Updating and installing required packages..."
 apt update -y && \
-DEBIAN_FRONTEND=noninteractive apt install -y openssh-server nginx python3 python3-pip
+DEBIAN_FRONTEND=noninteractive apt install -y openssh-server nginx python3 python3-pip bsdutils
 
 echo "[INFO] Upgrading pip and installing JupyterLab..."
 pip install --upgrade pip
@@ -43,7 +43,7 @@ if [[ $JUPYTER_PASSWORD ]]; then
     mkdir -p /workspace
     nohup jupyter lab --allow-root --no-browser --port=8888 --ip=* \
         --FileContentsManager.delete_to_trash=False \
-        --ServerApp.terminado_settings='{"shell_command":["/bin/bash"]}' \
+        --ServerApp.terminado_settings='{"shell_command":["script", "-q", "-c", "/bin/bash", "/dev/null"]}' \
         --ServerApp.token=$JUPYTER_PASSWORD --ServerApp.allow_origin=* \
         --ServerApp.preferred_dir=/workspace &> /jupyter.log &
 fi
