@@ -48,36 +48,8 @@ git config --global credential.helper store
 # Optional CLI login (if needed)
 # echo $HUGGINGFACE_TOKEN | huggingface-cli login --token --stdin
 
-echo "[INFO] Creating script to download model from Hugging Face..."
-cat << 'EOF' > /internalworkspace/download-hf.py
-from huggingface_hub import snapshot_download
-import os
-
-repo_id = "thesomeotherguy/for-runpod-deploy"
-token = os.getenv("HUGGINGFACE_TOKEN")
-local_dir = "./for-runpod-deploy"
-repo_type = "model"
-
-snapshot_download(
-    repo_id=repo_id,
-    repo_type=repo_type,
-    token=token,
-    local_dir=local_dir,
-    ignore_patterns=["*.tar.zstd", "*.zstd"],
-)
-
-print(f"[INFO] Repo downloaded directly to: {local_dir}")
-EOF
-
-echo "[INFO] Downloading private Hugging Face model..."
-python /internalworkspace/download-hf.py
-
 echo "[INFO] Cloning ComfyUI repository..."
 git clone https://github.com/comfyanonymous/ComfyUI.git
-
-echo "[INFO] Organizing model directory..."
-mkdir -p /internalworkspace/ComfyUI/models
-mv /internalworkspace/for-runpod-deploy/comfyui-models-folder/* /internalworkspace/ComfyUI/models/
 
 echo "[INFO] Installing ComfyUI Manager plugin..."
 cd /internalworkspace/ComfyUI/custom_nodes
