@@ -62,7 +62,7 @@ uv pip install torch torchvision torchaudio --extra-index-url https://download.p
 uv pip install -r ComfyUI/requirements.txt
 uv pip install -r ComfyUI/custom_nodes/comfyui-manager/requirements.txt
 uv pip install dlib insightface
-uv pip uninstall -y onnxruntime onnxruntime-gpu
+uv pip uninstall onnxruntime onnxruntime-gpu
 uv pip install onnxruntime-gpu --extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/
 
 echo "[INFO] Creating run script in /workspace..."
