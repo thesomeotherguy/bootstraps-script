@@ -12,11 +12,8 @@ echo "[INFO] Updating and installing essential tools..."
 apt-get update -y
 apt-get install -y wget nano curl git cmake
 
-echo "[INFO] Downloading uv install script..."
-curl -sSf https://astral.sh/uv/install.sh -o /tmp/install-uv.sh
-
-echo "[INFO] Running uv install script..."
-bash /tmp/install-uv.sh
+echo "[INFO] Installing 'uv' (Python packaging tool)..."
+wget -qO- https://astral.sh/uv/install.sh | bash
 
 echo "[INFO] Updating PATH for uv..."
 export PATH="$HOME/.local/bin:$PATH"
