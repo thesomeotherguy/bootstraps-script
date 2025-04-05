@@ -29,6 +29,16 @@ uv pip install --upgrade huggingface_hub
 uv pip install 'huggingface_hub[cli]' 'huggingface_hub[hf_transfer]'
 git config --global credential.helper store
 
+# Optional CLI login (if needed)
+# echo $HUGGINGFACE_TOKEN | huggingface-cli login --token --stdin
+# About Hugging Face token
+# It's set on .env or orchestrator like RunPod before deploying pods
+
+echo "[INFO] Enabling hf_transfer for faster Hugging Face downloads (temporary)..."
+export HF_HUB_ENABLE_HF_TRANSFER=1
+echo "[INFO] Making hf_transfer persistent across reboots/shells..."
+echo 'export HF_HUB_ENABLE_HF_TRANSFER=1' >> ~/.bashrc
+
 echo "[INFO] Python script to download single file from Hugging Face..."
 cat << 'EOF' > /internalworkspace/download-single-hf.py
 from huggingface_hub import hf_hub_download
@@ -83,16 +93,6 @@ ln -sfn /internalworkspace/ComfyUI/input /workspace/input
 ln -sfn /internalworkspace/ComfyUI/output /workspace/output
 mkdir -p /internalworkspace/ComfyUI/user/default/workflows
 ln -sfn /internalworkspace/ComfyUI/user/default/workflows /workspace/workflows
-
-# Optional CLI login (if needed)
-# echo $HUGGINGFACE_TOKEN | huggingface-cli login --token --stdin
-# About Hugging Face token
-# It's set on .env or orchestrator like RunPod before deploying pods
-
-echo "[INFO] Enabling hf_transfer for faster Hugging Face downloads (temporary)..."
-export HF_HUB_ENABLE_HF_TRANSFER=1
-echo "[INFO] Making hf_transfer persistent across reboots/shells..."
-echo 'export HF_HUB_ENABLE_HF_TRANSFER=1' >> ~/.bashrc
 
 echo "[INFO] Creating script to download model from Hugging Face..."
 cat << 'EOF' > /internalworkspace/download-hf.py
