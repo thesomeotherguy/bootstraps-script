@@ -51,7 +51,6 @@ git clone https://github.com/ltdrdata/ComfyUI-Manager comfyui-manager
 
 echo "[INFO] Installing Python dependencies..."
 cd /internalworkspace
-source .venv/bin/activate
 uv pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu126
 uv pip install -r ComfyUI/requirements.txt
 uv pip install -r ComfyUI/custom_nodes/comfyui-manager/requirements.txt
