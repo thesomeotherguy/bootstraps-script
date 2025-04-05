@@ -6,9 +6,14 @@ set -o pipefail
 echo "[INFO] Ensuring 'git' is installed..."
 apt-get update -y && apt-get install -y git
 
-echo "[INFO] Cloning bootstrap repo (clean)..."
-rm -rf /workspace/bootstraps-script
-git clone https://github.com/thesomeotherguy/bootstraps-script.git /workspace/bootstraps-script
+if [ -d /workspace/bootstraps-script ]; then
+    echo "[INFO] Repo already exists, pulling latest changes..."
+    cd /workspace/bootstraps-script
+    git pull
+else
+    echo "[INFO] Cloning bootstrap repo (fresh)..."
+    git clone https://github.com/thesomeotherguy/bootstraps-script.git /workspace/bootstraps-script
+fi
 
 echo "[INFO] Starting system services (SSH, Nginx, Jupyter)..."
 /bin/bash /workspace/bootstraps-script/runpod-comfyui/start-runpod-services.sh
