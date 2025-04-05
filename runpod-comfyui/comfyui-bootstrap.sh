@@ -15,7 +15,7 @@ apt-get install -y wget nano curl git cmake
 echo "[INFO] Installing 'uv' (Python packaging tool)..."
 curl -sSf https://astral.sh/uv/install.sh | sh
 export PATH="$HOME/.local/bin:$PATH"
-source ~/.bashrc
+hash -r
 
 echo "[INFO] Installing Python 3.12 using uv and setting up virtual environment..."
 uv python install 3.12
