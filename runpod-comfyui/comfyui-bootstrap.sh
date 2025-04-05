@@ -63,10 +63,10 @@ snapshot_download(
     repo_type=repo_type,
     token=token,
     local_dir=local_dir,
-    local_dir_use_symlinks=False,
     ignore_patterns=["*.tar.zstd", "*.zstd"],
 )
-print(f"Repo downloaded directly to: {local_dir}")
+
+print(f"[INFO] Repo downloaded directly to: {local_dir}")
 EOF
 
 echo "[INFO] Downloading private Hugging Face model..."
