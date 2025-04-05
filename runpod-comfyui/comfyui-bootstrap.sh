@@ -10,7 +10,7 @@ chmod -R 755 /internalworkspace
 
 echo "[INFO] Updating and installing essential tools..."
 apt-get update -y
-apt-get install -y wget nano curl git cmake
+apt-get install -y wget nano curl git cmake zstd
 
 echo "[INFO] Installing 'uv' (Python packaging tool)..."
 wget -qO- https://astral.sh/uv/install.sh | bash
@@ -101,7 +101,7 @@ snapshot_download(
     repo_type=repo_type,
     token=token,
     local_dir=local_dir,
-    ignore_patterns=["*.py", "*.md", "*.sh"],
+    ignore_patterns=["*.py", "*.md", "*.sh", "*.tar.zst", "*.zst"],
 )
 
 print(f"[INFO] Repo downloaded directly to: {local_dir}")
@@ -112,8 +112,7 @@ python /internalworkspace/download-hf.py
 
 echo "[INFO] Organizing model directory..."
 rm -rf /internalworkspace/ComfyUI/models
-mkdir -p /internalworkspace/ComfyUI/models
-mv /internalworkspace/for-runpod-deploy/comfyui-models-folder/* /internalworkspace/ComfyUI/models/
+mv /internalworkspace/for-runpod-deploy/comfyui-models-folder /internalworkspace/ComfyUI/models
 rm -rf /internalworkspace/for-runpod-deploy/comfyui-models-folder
 
 echo "[INFO] Bootstrap completed. Deactivating virtual environment..."
