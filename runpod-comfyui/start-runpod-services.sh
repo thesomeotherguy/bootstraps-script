@@ -34,11 +34,24 @@ echo "[INFO] Exporting environment variables to /etc/rp_environment..."
 printenv | grep -E "^RUNPOD_|^PATH=|^_=" | awk -F = '{ print "export " $1 "=\"" $2 "\"" }' >> /etc/rp_environment
 echo "source /etc/rp_environment" >> ~/.bashrc
 
-# Fix prompt to avoid escape sequence leak in Jupyter terminals
-echo "[INFO] Fixing shell prompt to avoid escape sequence issues..."
+echo "[INFO] Fixing shell prompt and removing terminal title escape sequences..."
+
+# Clean up PS1 to avoid leaking xterm OSC sequences like 0;276;0c
 echo 'export PS1="\u@\h:\w\$ "' >> ~/.bashrc
 
-# Add auto-tmux behavior for Jupyter terminal
+# Disable automatic terminal title setting in tmux
+echo 'set-option -g set-titles off' >> ~/.tmux.conf
+
+# Clean /etc/bash.bashrc and /etc/profile if they contain OSC sequences
+if [ -f /etc/bash.bashrc ]; then
+    sed -i 's/\\\[\\e]0;.*\\a\\\]//g' /etc/bash.bashrc
+fi
+
+if [ -f /etc/profile ]; then
+    sed -i 's/\\\[\\e]0;.*\\a\\\]//g' /etc/profile
+fi
+
+# Auto-start tmux in terminal
 echo "[INFO] Configuring auto-tmux in .bashrc..."
 cat << 'EOT' >> ~/.bashrc
 
