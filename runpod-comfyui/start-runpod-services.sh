@@ -41,41 +41,13 @@ service nginx start
 echo "[INFO] Starting JupyterLab..."
 mkdir -p /workspace
 
-# Create a temp script to start Jupyter and extract the token
-cat > /tmp/start_jupyter.sh << 'EOF'
-#!/bin/bash
-
-# Start Jupyter and redirect output
-jupyter lab --allow-root --no-browser --port=8888 --ip=* \
-    --FileContentsManager.delete_to_trash=False \
-    --ServerApp.terminado_settings='{"shell_command":["/bin/bash"]}' \
-    --ServerApp.allow_origin=* \
-    --ServerApp.preferred_dir=/workspace > /jupyter.log 2>&1 &
-
-# Wait for Jupyter to start fully
-sleep 5
-
-# Extract the token from the log file
-TOKEN=$(grep -oP "(?<=token=)[a-zA-Z0-9]+" /jupyter.log | head -1)
-
-if [[ -n "$TOKEN" ]]; then
-    echo "[INFO] Auto-generated Jupyter token: $TOKEN"
-    echo "$TOKEN" > /tmp/jupyter_token.txt
-    # Create a file that RunPod UI can use to add the token to URLs
-    echo "{\"jupyterToken\": \"$TOKEN\"}" > /runpod-jupyter-token.json
-else
-    echo "[WARNING] Could not extract auto-generated token."
-fi
-
-# Keep the container running
-tail -f /jupyter.log
-EOF
-
-chmod +x /tmp/start_jupyter.sh
-
 # Choose how to start Jupyter based on whether a password is provided
 if [[ $JUPYTER_PASSWORD ]]; then
     echo "[INFO] Using custom Jupyter token."
+    echo "============================================="
+    echo "JUPYTER TOKEN: $JUPYTER_PASSWORD"
+    echo "Access Jupyter at: http://localhost:8888/?token=$JUPYTER_PASSWORD"
+    echo "============================================="
     
     # Start Jupyter with the custom token
     nohup jupyter lab --allow-root --no-browser --port=8888 --ip=* \
@@ -85,13 +57,39 @@ if [[ $JUPYTER_PASSWORD ]]; then
         --ServerApp.preferred_dir=/workspace \
         --ServerApp.token=$JUPYTER_PASSWORD > /jupyter.log 2>&1 &
     
-    echo "$JUPYTER_PASSWORD" > /tmp/jupyter_token.txt
-    echo "{\"jupyterToken\": \"$JUPYTER_PASSWORD\"}" > /runpod-jupyter-token.json
+    # Save token in format RunPod expects
+    echo "{\"jupyter\": \"http://localhost:8888/?token=$JUPYTER_PASSWORD\"}" > /etc/runpod-jupyter.json
     
     # Keep the container running by tailing the log
     tail -f /jupyter.log
 else
     echo "[INFO] No Jupyter token provided. Using auto-generated token."
-    # Execute the script that starts Jupyter and extracts the token
-    exec /tmp/start_jupyter.sh
+    
+    # Start Jupyter and capture output
+    jupyter lab --allow-root --no-browser --port=8888 --ip=* \
+        --FileContentsManager.delete_to_trash=False \
+        --ServerApp.terminado_settings='{"shell_command":["/bin/bash"]}' \
+        --ServerApp.allow_origin=* \
+        --ServerApp.preferred_dir=/workspace > /jupyter.log 2>&1 &
+
+    # Wait for Jupyter to start fully
+    sleep 5
+
+    # Extract the token from the log file
+    TOKEN=$(grep -oP "(?<=token=)[a-zA-Z0-9]+" /jupyter.log | head -1)
+
+    if [[ -n "$TOKEN" ]]; then
+        echo "============================================="
+        echo "JUPYTER TOKEN: $TOKEN"
+        echo "Access Jupyter at: http://localhost:8888/?token=$TOKEN"
+        echo "============================================="
+        
+        # Save token in RunPod's expected format and location
+        echo "{\"jupyter\": \"http://localhost:8888/?token=$TOKEN\"}" > /etc/runpod-jupyter.json
+    else
+        echo "[WARNING] Could not extract auto-generated token."
+    fi
+
+    # Keep the container running
+    tail -f /jupyter.log
 fi
