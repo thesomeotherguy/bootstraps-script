@@ -60,6 +60,7 @@ uv pip install onnxruntime-gpu --extra-index-url https://aiinfra.pkgs.visualstud
 
 echo "[INFO] Creating run script in /workspace..."
 mkdir -p /workspace
+rm run_gpu.sh
 
 cat << 'EOF' > /workspace/run_gpu.sh
 #!/bin/bash
