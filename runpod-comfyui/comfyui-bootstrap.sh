@@ -82,7 +82,6 @@ ln -sfn /internalworkspace/ComfyUI/user/default/workflows /workspace/workflows
 
 echo "[INFO] Enabling hf_transfer for faster Hugging Face downloads..."
 export HF_HUB_ENABLE_HF_TRANSFER=1
-echo "[INFO] Making hf_transfer persistent across reboots/shells..."
 echo 'export HF_HUB_ENABLE_HF_TRANSFER=1' >> ~/.bashrc
 
 echo "[INFO] Creating script to download model from Hugging Face..."
