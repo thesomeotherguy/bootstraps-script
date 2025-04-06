@@ -112,7 +112,6 @@ EOF
 # echo "[INFO] Organizing model directory..."
 # rm -rf /internalworkspace/ComfyUI/models
 # mv /internalworkspace/for-runpod-deploy/comfyui-models-folder /internalworkspace/ComfyUI/models
-# rm -rf /internalworkspace/for-runpod-deploy/comfyui-models-folder
 
 echo "[INFO] Bootstrap completed. Deactivating virtual environment..."
 deactivate
