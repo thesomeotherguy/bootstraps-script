@@ -10,3 +10,4 @@ echo "[INFO] Running ComfyUI bootstrap..."
 /bin/bash /workspace/script/bootstraps-script/runpod-comfyui/comfyui-bootstrap.sh
 
 echo "[INFO] All setup done. Container is ready."
+# sleep infinity
