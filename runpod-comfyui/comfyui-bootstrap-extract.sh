@@ -34,7 +34,7 @@ git config --global credential.helper store
 # About Hugging Face token
 # It's set on .env or orchestrator like RunPod before deploying pods
 
-echo "[INFO] Enabling hf_transfer for faster Hugging Face downloads (temporary)..."
+echo "[INFO] Enabling hf_transfer for faster Hugging Face downloads..."
 export HF_HUB_ENABLE_HF_TRANSFER=1
 echo "[INFO] Making hf_transfer persistent across reboots/shells..."
 echo 'export HF_HUB_ENABLE_HF_TRANSFER=1' >> ~/.bashrc
