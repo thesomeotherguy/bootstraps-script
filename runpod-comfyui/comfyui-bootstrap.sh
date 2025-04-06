@@ -60,13 +60,29 @@ uv pip install onnxruntime-gpu --extra-index-url https://aiinfra.pkgs.visualstud
 
 echo "[INFO] Creating run script in /workspace..."
 mkdir -p /workspace
+
 cat << 'EOF' > /workspace/run_gpu.sh
 #!/bin/bash
-cd /internalworkspace
-source .venv/bin/activate
-cd ComfyUI
-python main.py --listen --preview-method auto
+
+SESSION_NAME="comfyui_session"
+
+# Check if session already exists
+if tmux has-session -t $SESSION_NAME 2>/dev/null; then
+    echo "[INFO] tmux session '$SESSION_NAME' already exists."
+    echo "[INFO] To attach:   tmux attach -t $SESSION_NAME"
+    echo "[INFO] To kill it:  tmux kill-session -t $SESSION_NAME"
+    exit 0
+fi
+
+echo "[INFO] Starting ComfyUI inside tmux session '$SESSION_NAME'..."
+tmux new-session -d -s $SESSION_NAME 'cd /internalworkspace && source .venv/bin/activate && cd ComfyUI && python main.py --listen --preview-method auto'
+
+echo "[INFO] Started. You can now:"
+echo "  - Attach:   tmux attach -t $SESSION_NAME"
+echo "  - Detach:   Ctrl+B then D"
+echo "  - Stop it:  Attach and press Ctrl+C"
 EOF
+
 chmod +x /workspace/run_gpu.sh
 
 echo "[INFO] Creating input/output symlinks in /workspace..."
