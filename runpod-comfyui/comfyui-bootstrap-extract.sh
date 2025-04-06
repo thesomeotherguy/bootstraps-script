@@ -82,10 +82,10 @@ find /internalworkspace/ComfyUI -name "*.py" -exec chmod +x {} \;
 find /internalworkspace/.venv/bin -type f -exec chmod +x {} \;
 ###########################################
 
-source .venv/bin/activate
-
 echo "[INFO] Cleaning up..."
 rm comfyui-venv.tar.zst
+
+source .venv/bin/activate
 
 echo "[INFO] Creating run script in /workspace..."
 mkdir -p /workspace
