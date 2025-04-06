@@ -5,7 +5,7 @@ set -o pipefail
 
 echo "[INFO] Updating and installing required packages..."
 apt update -y && \
-DEBIAN_FRONTEND=noninteractive apt install -y openssh-server nginx python3 python3-pip bsdutils
+DEBIAN_FRONTEND=noninteractive apt install -y openssh-server nginx python3 python3-pip tmux
 
 echo "[INFO] Upgrading pip and installing JupyterLab..."
 pip install --upgrade pip
@@ -38,12 +38,24 @@ echo "[INFO] Starting Nginx..."
 service nginx start
 
 # Jupyter
+echo "[INFO] Starting JupyterLab..."
+mkdir -p /workspace
+
+# Base Jupyter command
+JUPYTER_CMD="jupyter lab --allow-root --no-browser --port=8888 --ip=* \
+    --FileContentsManager.delete_to_trash=False \
+    --ServerApp.terminado_settings='{\"shell_command\":[\"/bin/bash\"]}' \
+    --ServerApp.allow_origin=* \
+    --ServerApp.preferred_dir=/workspace"
+
+# Add token if provided
 if [[ $JUPYTER_PASSWORD ]]; then
-    echo "[INFO] Starting JupyterLab..."
-    mkdir -p /workspace
-    nohup jupyter lab --allow-root --no-browser --port=8888 --ip=* \
-        --FileContentsManager.delete_to_trash=False \
-        --ServerApp.terminado_settings='{"shell_command":["script", "-q", "-c", "/bin/bash", "/dev/null"]}' \
-        --ServerApp.token=$JUPYTER_PASSWORD --ServerApp.allow_origin=* \
-        --ServerApp.preferred_dir=/workspace &> /jupyter.log &
+    echo "[INFO] Using custom Jupyter token."
+    JUPYTER_CMD="$JUPYTER_CMD --ServerApp.token=$JUPYTER_PASSWORD"
+else
+    echo "[INFO] No Jupyter token provided. Using auto-generated token."
 fi
+
+nohup bash -c "$JUPYTER_CMD" &> /jupyter.log &
+
+echo "[INFO] JupyterLab is starting. tmux is available if you want better terminal control (e.g. Ctrl+C works there)."
