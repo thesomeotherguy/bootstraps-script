@@ -102,11 +102,40 @@ EOF
 
 chmod +x /workspace/run_gpu.sh
 
-echo "[INFO] Creating input/output symlinks in /workspace..."
-ln -sfn /internalworkspace/ComfyUI/input /workspace/input
-ln -sfn /internalworkspace/ComfyUI/output /workspace/output
-mkdir -p /internalworkspace/ComfyUI/user/default/workflows
-ln -sfn /internalworkspace/ComfyUI/user/default/workflows /workspace/workflows
+echo "[INFO] Reconfiguring ComfyUI directory symlinks..."
+
+# 1. Ensure all necessary directories exist
+echo "[INFO] Ensuring target data directories exist in /workspace..."
+mkdir -p /workspace/input
+mkdir -p /workspace/output
+mkdir -p /workspace/workflows
+
+echo "[INFO] Ensuring parent directories for links exist in /internalworkspace..."
+mkdir -p /internalworkspace/ComfyUI/user/default
+
+# 2. Remove potentially conflicting original directories/files within /internalworkspace
+echo "[INFO] Removing default internal directories if they exist (safe even if they don't)..."
+rm -rf /internalworkspace/ComfyUI/input
+rm -rf /internalworkspace/ComfyUI/output
+rm -rf /internalworkspace/ComfyUI/user/default/workflows # This is safe
+
+# 3. Create all symbolic links
+echo "[INFO] Creating symlinks from /internalworkspace pointing to /workspace..."
+ln -sfn /workspace/input /internalworkspace/ComfyUI/input
+ln -sfn /workspace/output /internalworkspace/ComfyUI/output
+ln -sfn /workspace/workflows /internalworkspace/ComfyUI/user/default/workflows
+
+echo "[INFO] Symlink configuration complete."
+
+# Optional: Verification step
+echo "[INFO] Verifying symlinks and target directories:"
+ls -ld \
+    /internalworkspace/ComfyUI/input \
+    /internalworkspace/ComfyUI/output \
+    /internalworkspace/ComfyUI/user/default/workflows \
+    /workspace/input \
+    /workspace/output \
+    /workspace/workflows
 
 echo "[INFO] Creating script to download model from Hugging Face..."
 cat << 'EOF' > /internalworkspace/download-hf.py
