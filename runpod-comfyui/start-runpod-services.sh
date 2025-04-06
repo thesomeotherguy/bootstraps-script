@@ -75,12 +75,13 @@ JUPYTER_CMD="jupyter lab --allow-root --no-browser --port=8888 --ip=* \
     --ServerApp.allow_origin=* \
     --ServerApp.preferred_dir=/workspace"
 
-# Add token if provided
+# Add token if provided or disable auth
 if [[ $JUPYTER_PASSWORD ]]; then
     echo "[INFO] Using custom Jupyter token."
     JUPYTER_CMD="$JUPYTER_CMD --ServerApp.token=$JUPYTER_PASSWORD"
 else
-    echo "[INFO] No Jupyter token provided. Using auto-generated token."
+    echo "[INFO] No Jupyter token provided. Disabling authentication."
+    JUPYTER_CMD="$JUPYTER_CMD --ServerApp.token='' --ServerApp.password=''"
 fi
 
 # Start Jupyter
