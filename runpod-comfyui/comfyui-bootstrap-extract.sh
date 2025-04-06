@@ -45,7 +45,7 @@ from huggingface_hub import hf_hub_download
 import os
 
 repo_id = "thesomeotherguy/for-runpod-deploy"
-filename = "comfyui.tar.zst"
+filename = "comfyui-venv.tar.zst"
 token = os.getenv("HUGGINGFACE_TOKEN")
 
 file_path = hf_hub_download(
@@ -61,21 +61,19 @@ EOF
 echo "[INFO] Running download script..."
 python /internalworkspace/download-single-hf.py
 
-echo "[INFO] Extracting comfyui.tar.zst..."
-cd /internalworkspace
-tar -I 'zstd -T0' -xf comfyui.tar.zst
-
-echo "[INFO] Cleaning up..."
-rm comfyui.tar.zst
-
 ##################
 deactivate
 cd /internalworkspace
 rm -rf /internalworkspace/.venv
-mv /internalworkspace/ComfyUI/.venv /internalworkspace/.venv
+
+echo "[INFO] Extracting comfyui.tar.zst..."
+cd /internalworkspace
+tar -I 'zstd -T0' -xf comfyui-venv.tar.zst
+
 source .venv/bin/activate
-uv pip install --upgrade huggingface_hub
-uv pip install 'huggingface_hub[cli]' 'huggingface_hub[hf_transfer]'
+
+echo "[INFO] Cleaning up..."
+rm comfyui-venv.tar.zst
 ##################
 
 echo "[INFO] Creating run script in /workspace..."
