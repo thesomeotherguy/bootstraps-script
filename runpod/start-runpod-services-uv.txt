@@ -1,5 +1,4 @@
-#!/bin/bash
-
+bash -c '
 apt update && \
 DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends openssh-server nginx python3 wget ca-certificates && \
 wget -qO- https://astral.sh/uv/install.sh | sh && \
@@ -39,3 +38,4 @@ else \
         --ServerApp.allow_origin=* --ServerApp.preferred_dir=/workspace & \
 fi && \
 sleep infinity
+'
