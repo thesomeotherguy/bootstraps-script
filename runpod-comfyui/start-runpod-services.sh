@@ -5,7 +5,7 @@ set -o pipefail
 
 echo "[INFO] Updating and installing required packages..."
 apt update -y && \
-DEBIAN_FRONTEND=noninteractive apt install -y openssh-server nginx python3 python3-pip tmux
+DEBIAN_FRONTEND=noninteractive apt install -y openssh-server nginx python3 python3-pip bsdutils
 
 echo "[INFO] Upgrading pip and installing JupyterLab..."
 pip install --upgrade pip
@@ -34,57 +34,26 @@ echo "[INFO] Exporting environment variables to /etc/rp_environment..."
 printenv | grep -E "^RUNPOD_|^PATH=|^_=" | awk -F = '{ print "export " $1 "=\"" $2 "\"" }' >> /etc/rp_environment
 echo "source /etc/rp_environment" >> ~/.bashrc
 
-echo "[INFO] Fixing shell prompt and removing terminal title escape sequences..."
-
-# Clean up PS1 to avoid leaking xterm OSC sequences like 0;276;0c
-echo 'export PS1="\u@\h:\w\$ "' >> ~/.bashrc
-
-# Disable automatic terminal title setting in tmux
-echo 'set-option -g set-titles off' >> ~/.tmux.conf
-
-# Clean /etc/bash.bashrc and /etc/profile if they contain OSC sequences
-if [ -f /etc/bash.bashrc ]; then
-    sed -i 's/\\\[\\e]0;.*\\a\\\]//g' /etc/bash.bashrc
-fi
-
-if [ -f /etc/profile ]; then
-    sed -i 's/\\\[\\e]0;.*\\a\\\]//g' /etc/profile
-fi
-
-# Auto-start tmux in terminal
-echo "[INFO] Configuring auto-tmux in .bashrc..."
-cat << 'EOT' >> ~/.bashrc
-
-# Auto-start tmux in terminals
-if command -v tmux &> /dev/null && [ -z "$TMUX" ] && [ "$TERM" != "dumb" ]; then
-  tmux attach-session -t jupyter || tmux new-session -s jupyter
-fi
-EOT
-
 echo "[INFO] Starting Nginx..."
 service nginx start
 
-# JupyterLab startup
+# Jupyter
 echo "[INFO] Starting JupyterLab..."
 mkdir -p /workspace
 
-# Base Jupyter command
+# Build the base Jupyter command
 JUPYTER_CMD="jupyter lab --allow-root --no-browser --port=8888 --ip=* \
     --FileContentsManager.delete_to_trash=False \
     --ServerApp.terminado_settings='{\"shell_command\":[\"/bin/bash\"]}' \
     --ServerApp.allow_origin=* \
     --ServerApp.preferred_dir=/workspace"
 
-# Add token if provided or disable auth
+# Add token if provided
 if [[ $JUPYTER_PASSWORD ]]; then
     echo "[INFO] Using custom Jupyter token."
     JUPYTER_CMD="$JUPYTER_CMD --ServerApp.token=$JUPYTER_PASSWORD"
 else
-    echo "[INFO] No Jupyter token provided. Disabling authentication."
-    JUPYTER_CMD="$JUPYTER_CMD --ServerApp.token='' --ServerApp.password=''"
+    echo "[INFO] No Jupyter token provided. Using auto-generated token."
 fi
 
-# Start Jupyter
 nohup bash -c "$JUPYTER_CMD" &> /jupyter.log &
-
-echo "[INFO] JupyterLab is starting. Use the terminal tab and enjoy tmux (Ctrl+C now works properly!)."
