@@ -61,20 +61,31 @@ EOF
 echo "[INFO] Running download script..."
 python /internalworkspace/download-single-hf.py
 
-##################
 deactivate
 cd /internalworkspace
 rm -rf /internalworkspace/.venv
 
+###########################################
 echo "[INFO] Extracting comfyui.tar.zst..."
 cd /internalworkspace
-tar -I 'zstd -T0' -xf comfyui-venv.tar.zst
+# Extract the archive (preserving structure but not permissions)
+tar --no-same-owner -I 'zstd -T0' -xf comfyui-venv.tar.zst -C /internalworkspace/
+# Set ownership to root
+chown -R root:root /internalworkspace/ComfyUI /internalworkspace/.venv
+# Set appropriate permissions
+find /internalworkspace/ComfyUI /internalworkspace/.venv -type d -exec chmod 755 {} \;
+find /internalworkspace/ComfyUI /internalworkspace/.venv -type f -exec chmod 644 {} \;
+# Make scripts executable
+find /internalworkspace/ComfyUI -name "*.sh" -exec chmod +x {} \;
+find /internalworkspace/ComfyUI -name "*.py" -exec chmod +x {} \;
+# Make Python binaries in venv executable
+find /internalworkspace/.venv/bin -type f -exec chmod +x {} \;
+###########################################
 
 source .venv/bin/activate
 
 echo "[INFO] Cleaning up..."
 rm comfyui-venv.tar.zst
-##################
 
 echo "[INFO] Creating run script in /workspace..."
 mkdir -p /workspace
