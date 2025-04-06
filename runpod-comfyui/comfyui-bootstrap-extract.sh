@@ -36,7 +36,6 @@ git config --global credential.helper store
 
 echo "[INFO] Enabling hf_transfer for faster Hugging Face downloads..."
 export HF_HUB_ENABLE_HF_TRANSFER=1
-echo "[INFO] Making hf_transfer persistent across reboots/shells..."
 echo 'export HF_HUB_ENABLE_HF_TRANSFER=1' >> ~/.bashrc
 
 echo "[INFO] Python script to download single file from Hugging Face..."
@@ -66,19 +65,23 @@ cd /internalworkspace
 rm -rf /internalworkspace/.venv
 
 ###########################################
-echo "[INFO] Extracting comfyui.tar.zst..."
+echo "[INFO] Extracting comfyui.tar.zst ..."
 cd /internalworkspace
 # Extract the archive (preserving structure but not permissions)
 tar --no-same-owner -I 'zstd -T0' -xf comfyui-venv.tar.zst -C /internalworkspace/
 # Set ownership to root
+echo "[INFO] Set ownership of extracted ComfyUI + venv to root..."
 chown -R root:root /internalworkspace/ComfyUI /internalworkspace/.venv
 # Set appropriate permissions
+echo "[INFO] Set appropriate permissions of extracted ComfyUI + venv ..."
 find /internalworkspace/ComfyUI /internalworkspace/.venv -type d -exec chmod 755 {} \;
 find /internalworkspace/ComfyUI /internalworkspace/.venv -type f -exec chmod 644 {} \;
 # Make scripts executable
+echo "[INFO] Make scripts of extracted ComfyUI + venv folders executable..."
 find /internalworkspace/ComfyUI -name "*.sh" -exec chmod +x {} \;
 find /internalworkspace/ComfyUI -name "*.py" -exec chmod +x {} \;
 # Make Python binaries in venv executable
+echo "[INFO] Make Python binaries of extracted venv folders executable ..."
 find /internalworkspace/.venv/bin -type f -exec chmod +x {} \;
 ###########################################
 
