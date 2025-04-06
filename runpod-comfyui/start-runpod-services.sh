@@ -34,10 +34,20 @@ echo "[INFO] Exporting environment variables to /etc/rp_environment..."
 printenv | grep -E "^RUNPOD_|^PATH=|^_=" | awk -F = '{ print "export " $1 "=\"" $2 "\"" }' >> /etc/rp_environment
 echo "source /etc/rp_environment" >> ~/.bashrc
 
+# Add auto-tmux behavior for Jupyter terminal
+echo "[INFO] Configuring auto-tmux in .bashrc..."
+cat << 'EOT' >> ~/.bashrc
+
+# Auto-start tmux in terminals
+if command -v tmux &> /dev/null && [ -z "$TMUX" ] && [ "$TERM" != "dumb" ]; then
+  tmux attach-session -t jupyter || tmux new-session -s jupyter
+fi
+EOT
+
 echo "[INFO] Starting Nginx..."
 service nginx start
 
-# Jupyter
+# JupyterLab startup
 echo "[INFO] Starting JupyterLab..."
 mkdir -p /workspace
 
@@ -56,6 +66,7 @@ else
     echo "[INFO] No Jupyter token provided. Using auto-generated token."
 fi
 
+# Start Jupyter
 nohup bash -c "$JUPYTER_CMD" &> /jupyter.log &
 
-echo "[INFO] JupyterLab is starting. tmux is available if you want better terminal control (e.g. Ctrl+C works there)."
+echo "[INFO] JupyterLab is starting. Use the terminal tab and enjoy tmux (Ctrl+C now works properly!)."
