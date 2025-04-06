@@ -49,13 +49,13 @@ if [[ $JUPYTER_PASSWORD ]]; then
     echo "Access Jupyter at: http://localhost:8888/?token=$JUPYTER_PASSWORD"
     echo "============================================="
     
-    # Start Jupyter with the custom token
+    # Start Jupyter with the custom token - using the new parameter
     nohup jupyter lab --allow-root --no-browser --port=8888 --ip=* \
         --FileContentsManager.delete_to_trash=False \
         --ServerApp.terminado_settings='{"shell_command":["/bin/bash"]}' \
         --ServerApp.allow_origin=* \
         --ServerApp.preferred_dir=/workspace \
-        --ServerApp.token=$JUPYTER_PASSWORD > /jupyter.log 2>&1 &
+        --IdentityProvider.token=$JUPYTER_PASSWORD > /jupyter.log 2>&1 &
     
     # Save token in format RunPod expects
     echo "{\"jupyter\": \"http://localhost:8888/?token=$JUPYTER_PASSWORD\"}" > /etc/runpod-jupyter.json
@@ -65,12 +65,13 @@ if [[ $JUPYTER_PASSWORD ]]; then
 else
     echo "[INFO] No Jupyter token provided. Using auto-generated token."
     
-    # Start Jupyter and capture output
+    # Start Jupyter with auto-generated token
     jupyter lab --allow-root --no-browser --port=8888 --ip=* \
         --FileContentsManager.delete_to_trash=False \
         --ServerApp.terminado_settings='{"shell_command":["/bin/bash"]}' \
         --ServerApp.allow_origin=* \
-        --ServerApp.preferred_dir=/workspace > /jupyter.log 2>&1 &
+        --ServerApp.preferred_dir=/workspace \
+        --IdentityProvider.token=auto > /jupyter.log 2>&1 &
 
     # Wait for Jupyter to start fully
     sleep 5
