@@ -80,6 +80,7 @@ uv pip install 'huggingface_hub[cli]' 'huggingface_hub[hf_transfer]'
 
 echo "[INFO] Creating run script in /workspace..."
 mkdir -p /workspace
+rm /workspace/run_gpu.sh
 cat << 'EOF' > /workspace/run_gpu.sh
 #!/bin/bash
 cd /internalworkspace
@@ -87,6 +88,7 @@ source .venv/bin/activate
 cd ComfyUI
 python main.py --listen --preview-method auto
 EOF
+
 chmod +x /workspace/run_gpu.sh
 
 echo "[INFO] Creating input/output symlinks in /workspace..."
