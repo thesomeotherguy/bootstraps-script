@@ -34,6 +34,10 @@ echo "[INFO] Exporting environment variables to /etc/rp_environment..."
 printenv | grep -E "^RUNPOD_|^PATH=|^_=" | awk -F = '{ print "export " $1 "=\"" $2 "\"" }' >> /etc/rp_environment
 echo "source /etc/rp_environment" >> ~/.bashrc
 
+# Fix prompt to avoid escape sequence leak in Jupyter terminals
+echo "[INFO] Fixing shell prompt to avoid escape sequence issues..."
+echo 'export PS1="\u@\h:\w\$ "' >> ~/.bashrc
+
 # Add auto-tmux behavior for Jupyter terminal
 echo "[INFO] Configuring auto-tmux in .bashrc..."
 cat << 'EOT' >> ~/.bashrc
