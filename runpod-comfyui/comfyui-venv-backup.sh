@@ -9,21 +9,25 @@ echo "[INFO] Starting ComfyUI backup process..."
 cd /internalworkspace || { echo "[ERROR] Failed to change directory to /internalworkspace"; exit 1; }
 
 echo "[INFO] Creating backup archive 'comfyui-venv.tar.zst'..."
-echo "[INFO] Excluding: ComfyUI/input, ComfyUI/output, ComfyUI/user/default/workflows, ComfyUI/models"
+echo "[INFO] Including: ComfyUI (most), .venv, ComfyUI/models/config"
+echo "[INFO] Excluding: ComfyUI/input, ComfyUI/output, ComfyUI/user/default/workflows, ComfyUI/models (except ComfyUI/models/config)"
 
 # Create the compressed tar archive
+# Exclude specified directories within ComfyUI.
+# Explicitly include ComfyUI/models/config even though ComfyUI/models is excluded during traversal.
 tar \
   --exclude='ComfyUI/input' \
   --exclude='ComfyUI/output' \
   --exclude='ComfyUI/user/default/workflows' \
-  --excluce='ComfyUI/models' \
+  --exclude='ComfyUI/models' \
   --no-same-owner \
   -I 'zstd -T0' \
   -cf comfyui-venv.tar.zst \
   ComfyUI \
-  .venv
+  .venv \
+  ComfyUI/models/config # <-- Explicitly add this directory here
 
-# Check if tar command was successful (though set -e should handle this)
+# Check if tar command was successful
 if [ $? -eq 0 ]; then
   echo "[INFO] Backup archive 'comfyui-venv.tar.zst' created successfully in /internalworkspace."
   # Optional: List file size
