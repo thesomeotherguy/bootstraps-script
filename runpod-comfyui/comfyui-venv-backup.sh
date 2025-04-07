@@ -9,13 +9,14 @@ echo "[INFO] Starting ComfyUI backup process..."
 cd /internalworkspace || { echo "[ERROR] Failed to change directory to /internalworkspace"; exit 1; }
 
 echo "[INFO] Creating backup archive 'comfyui-venv.tar.zst'..."
-echo "[INFO] Excluding: ComfyUI/input, ComfyUI/output, ComfyUI/user/default/workflows"
+echo "[INFO] Excluding: ComfyUI/input, ComfyUI/output, ComfyUI/user/default/workflows, ComfyUI/models"
 
 # Create the compressed tar archive
 tar \
   --exclude='ComfyUI/input' \
   --exclude='ComfyUI/output' \
   --exclude='ComfyUI/user/default/workflows' \
+  --excluce='ComfyUI/models' \
   --no-same-owner \
   -I 'zstd -T0' \
   -cf comfyui-venv.tar.zst \
