@@ -67,27 +67,22 @@ rm -rf /internalworkspace/.venv
 ###########################################
 echo "[INFO] Extracting comfyui.tar.zst ..."
 cd /internalworkspace
-# Extract - ownership will be root:root due to --no-same-owner and running as root
 tar --no-same-owner -I 'zstd -T0' -xf comfyui-venv.tar.zst -C /internalworkspace/
 
-# --- chown is likely redundant, consider removing ---
-# echo "[INFO] Set ownership of extracted ComfyUI + venv to root..."
-# chown -R root:root /internalworkspace/ComfyUI /internalworkspace/.venv
+echo "[INFO] Set ownership of extracted ComfyUI + venv to root..."
+chown -R root:root /internalworkspace/ComfyUI /internalworkspace/.venv
 
-# Set essential baseline permissions
 echo "[INFO] Set baseline directory and essential file permissions..."
 # Directories need execute bit for access (Applies to ComfyUI and .venv)
 find /internalworkspace/ComfyUI /internalworkspace/.venv -type d -exec chmod 755 {} \;
 # Files default to non-executable (Applies to ComfyUI and .venv). Git reset will fix tracked files later.
 find /internalworkspace/ComfyUI /internalworkspace/.venv -type f -exec chmod 644 {} \;
 
-# Make ONLY specific scripts/binaries executable that Git won't manage or where needed immediately
 echo "[INFO] Make specific scripts/binaries executable..."
 # Shell scripts in ComfyUI (optional, git reset might cover tracked ones, but safe for untracked)
 find /internalworkspace/ComfyUI -name "*.sh" -exec chmod +x {} \;
 # Binaries/scripts in the venv (ESSENTIAL)
 find /internalworkspace/.venv/bin -type f -exec chmod +x {} \;
-# NOTE: We DO NOT make all *.py executable here anymore.
 
 # Reset Git state to match the repo history (fixes tracked file permissions/modes)
 echo "[INFO] Forcing clean git state in ComfyUI repository..."
@@ -96,7 +91,7 @@ git reset --hard HEAD
 cd /internalworkspace || { echo "[ERROR] Failed to cd back to /internalworkspace"; exit 1; }
 
 echo "[INFO] Forcing clean git state in ComfyUI custom node repositories (and submodules)..."
-find /internalworkspace/ComfyUI/custom_nodes -type d -name .git -execdir git reset --hard HEAD \; || echo "[WARN] Attempted git reset on custom nodes/submodules; some may have failed (this is often OK if directories are not git repos)."
+find /internalworkspace/ComfyUI/custom_nodes -type d -name .git -execdir git reset --hard HEAD \; || echo "[WARN] Attempted git reset; some may have failed."
 echo "[INFO] Git repositories cleaned."
 ###########################################
 
@@ -129,7 +124,7 @@ echo "[INFO] Ensuring parent directories for links exist in /internalworkspace..
 mkdir -p /internalworkspace/ComfyUI/user/default
 
 # 2. Remove potentially conflicting original directories/files within /internalworkspace
-echo "[INFO] Removing default internal directories if they exist (safe even if they don't)..."
+echo "[INFO] Removing default internal directories if they exist..."
 rm -rf /internalworkspace/ComfyUI/input
 rm -rf /internalworkspace/ComfyUI/output
 rm -rf /internalworkspace/ComfyUI/user/default/workflows
