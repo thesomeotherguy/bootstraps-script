@@ -177,6 +177,7 @@ echo "[INFO] Organizing model directory..."
 rm -rf /internalworkspace/ComfyUI/models
 mv /internalworkspace/for-runpod-deploy/comfyui-models-folder /internalworkspace/ComfyUI/models
 
+echo "[INFO] Copying backup and upload scripts..."
 cd /internalworkspace
 cp /workspace/.script/bootstraps-script/runpod-comfyui/comfyui-venv-backup.sh /internalworkspace/comfyui-venv-backup.sh
 chmod +x comfyui-venv-backup.sh
