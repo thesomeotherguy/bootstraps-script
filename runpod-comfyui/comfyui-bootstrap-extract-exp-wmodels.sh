@@ -29,9 +29,8 @@ uv pip install --upgrade huggingface_hub
 uv pip install 'huggingface_hub[cli]' 'huggingface_hub[hf_transfer]'
 git config --global credential.helper store
 
-# Optional CLI login (if needed)
-# echo $HUGGINGFACE_TOKEN | huggingface-cli login --token --stdin
-# About Hugging Face token
+# Optional CLI login (if needed), please type:
+# echo $HUGGINGFACE_TOKEN
 # It's set on .env or orchestrator like RunPod before deploying pods
 
 echo "[INFO] Enabling hf_transfer for faster Hugging Face downloads..."
@@ -63,7 +62,7 @@ python /internalworkspace/download-single-hf.py
 deactivate
 cd /internalworkspace
 rm -rf /internalworkspace/.venv
-
+      
 ###########################################
 echo "[INFO] Extracting comfyui.tar.zst ..."
 cd /internalworkspace
@@ -187,6 +186,32 @@ chmod +x workspace-backup.sh
 echo "[INFO] ReActor Fixes..."
 rm /internalworkspace/ComfyUI/custom_nodes/comfyui-reactor/scripts/reactor_sfw.py
 mv /internalworkspace/ComfyUI/custom_nodes/comfyui-reactor/scripts/reactor_nsfw.py /internalworkspace/ComfyUI/custom_nodes/comfyui-reactor/scripts/reactor_sfw.py
+
+echo "[INFO] Configuring terminal to auto-attach FIRST terminal to tmux session 'comfyui'..."
+# Remove any previous auto-attach attempts from .bashrc if script runs multiple times
+# Using '#' as delimiter for sed to avoid conflict with paths if they were used
+sed -i '\%# START TMUX AUTO ATTACH%,\%# END TMUX AUTO ATTACH%d' /root/.bashrc
+# Add the new logic
+# Using 'EOF' ensures no variable expansion happens *now*, only when .bashrc is read later
+cat << 'EOF' >> /root/.bashrc
+# START TMUX AUTO ATTACH
+# Auto-attach to tmux session 'comfyui' if it exists, we're not in tmux, AND no other client is attached
+if command -v tmux &> /dev/null && tmux has-session -t comfyui 2>/dev/null; then
+  # Check if we are NOT already inside tmux
+  if [ -z "$TMUX" ]; then
+    # Check if there are currently NO clients attached to the session
+    # The command substitution $() is correct here
+    if [ -z "$(tmux list-clients -t comfyui 2>/dev/null)" ]; then
+      echo "Attempting to attach first terminal to tmux session 'comfyui'..."
+      # This attach command is correct
+      tmux attach -t comfyui
+      # Note: The echo below will only appear after successful detach/exit
+      echo "Detached from tmux session 'comfyui'."
+    fi # End client check
+  fi # End TMUX check
+fi # End command/session check
+# END TMUX AUTO ATTACH
+EOF
 
 echo "[INFO] Bootstrap completed. Deactivating virtual environment..."
 deactivate
