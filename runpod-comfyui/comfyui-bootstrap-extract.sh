@@ -183,6 +183,8 @@ cp /workspace/.script/bootstraps-script/runpod-comfyui/comfyui-venv-backup.sh /i
 chmod +x comfyui-venv-backup.sh
 cp /workspace/.script/bootstraps-script/runpod-comfyui/comfyui-venv-backup-upload.py /internalworkspace/comfyui-venv-backup-upload.py
 cd /workspace
+cp /workspace/.script/bootstraps-script/runpod-comfyui/workspace-backup.sh /workspace/workspace-backup.sh
+chmod +x workspace-backup.sh
 
 echo "[INFO] Bootstrap completed. Deactivating virtual environment..."
 deactivate
