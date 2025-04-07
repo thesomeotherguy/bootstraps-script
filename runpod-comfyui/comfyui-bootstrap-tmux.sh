@@ -54,8 +54,6 @@ cd /internalworkspace
 uv pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu126
 uv pip install -r ComfyUI/requirements.txt
 uv pip install -r ComfyUI/custom_nodes/comfyui-manager/requirements.txt
-# uv pip install dlib insightface
-# uv pip install onnxruntime-gpu --extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/
 
 echo "[INFO] Creating run script in /workspace..."
 mkdir -p /workspace
@@ -81,7 +79,7 @@ echo "[INFO] Ensuring parent directories for links exist in /internalworkspace..
 mkdir -p /internalworkspace/ComfyUI/user/default
 
 # 2. Remove potentially conflicting original directories/files within /internalworkspace
-echo "[INFO] Removing default internal directories if they exist (safe even if they don't)..."
+echo "[INFO] Removing default internal directories if they exist..."
 rm -rf /internalworkspace/ComfyUI/input
 rm -rf /internalworkspace/ComfyUI/output
 rm -rf /internalworkspace/ComfyUI/user/default/workflows
@@ -104,9 +102,8 @@ ls -ld \
     /workspace/output \
     /workspace/workflows
 
-# Optional CLI login (if needed)
-# echo $HUGGINGFACE_TOKEN | huggingface-cli login --token --stdin
-# About Hugging Face token
+# Optional CLI login (if needed), please type:
+# echo $HUGGINGFACE_TOKEN
 # It's set on .env or orchestrator like RunPod before deploying pods
 
 echo "[INFO] Enabling hf_transfer for faster Hugging Face downloads..."
