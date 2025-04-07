@@ -54,8 +54,6 @@ cd /internalworkspace
 uv pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu126
 uv pip install -r ComfyUI/requirements.txt
 uv pip install -r ComfyUI/custom_nodes/comfyui-manager/requirements.txt
-# uv pip install dlib insightface
-# uv pip install onnxruntime-gpu --extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/
 
 echo "[INFO] Creating run script in /workspace..."
 mkdir -p /workspace
@@ -81,7 +79,7 @@ echo "[INFO] Ensuring parent directories for links exist in /internalworkspace..
 mkdir -p /internalworkspace/ComfyUI/user/default
 
 # 2. Remove potentially conflicting original directories/files within /internalworkspace
-echo "[INFO] Removing default internal directories if they exist (safe even if they don't)..."
+echo "[INFO] Removing default internal directories if they exist..."
 rm -rf /internalworkspace/ComfyUI/input
 rm -rf /internalworkspace/ComfyUI/output
 rm -rf /internalworkspace/ComfyUI/user/default/workflows
@@ -104,9 +102,8 @@ ls -ld \
     /workspace/output \
     /workspace/workflows
 
-# Optional CLI login (if needed)
-# echo $HUGGINGFACE_TOKEN | huggingface-cli login --token --stdin
-# About Hugging Face token
+# Optional CLI login (if needed), please type:
+# echo $HUGGINGFACE_TOKEN
 # It's set on .env or orchestrator like RunPod before deploying pods
 
 echo "[INFO] Enabling hf_transfer for faster Hugging Face downloads..."
@@ -149,6 +146,32 @@ cp /workspace/.script/bootstraps-script/runpod-comfyui/comfyui-venv-backup-uploa
 cd /workspace
 cp /workspace/.script/bootstraps-script/runpod-comfyui/workspace-backup.sh /workspace/workspace-backup.sh
 chmod +x workspace-backup.sh
+
+echo "[INFO] Configuring terminal to auto-attach FIRST terminal to tmux session 'comfyui'..."
+# Remove any previous auto-attach attempts from .bashrc if script runs multiple times
+# Using '#' as delimiter for sed to avoid conflict with paths if they were used
+sed -i '\%# START TMUX AUTO ATTACH%,\%# END TMUX AUTO ATTACH%d' /root/.bashrc
+# Add the new logic
+# Using 'EOF' ensures no variable expansion happens *now*, only when .bashrc is read later
+cat << 'EOF' >> /root/.bashrc
+# START TMUX AUTO ATTACH
+# Auto-attach to tmux session 'comfyui' if it exists, we're not in tmux, AND no other client is attached
+if command -v tmux &> /dev/null && tmux has-session -t comfyui 2>/dev/null; then
+  # Check if we are NOT already inside tmux
+  if [ -z "$TMUX" ]; then
+    # Check if there are currently NO clients attached to the session
+    # The command substitution $() is correct here
+    if [ -z "$(tmux list-clients -t comfyui 2>/dev/null)" ]; then
+      echo "Attempting to attach first terminal to tmux session 'comfyui'..."
+      # This attach command is correct
+      tmux attach -t comfyui
+      # Note: The echo below will only appear after successful detach/exit
+      echo "Detached from tmux session 'comfyui'."
+    fi # End client check
+  fi # End TMUX check
+fi # End command/session check
+# END TMUX AUTO ATTACH
+EOF
 
 echo "[INFO] Bootstrap completed. Deactivating virtual environment..."
 deactivate
