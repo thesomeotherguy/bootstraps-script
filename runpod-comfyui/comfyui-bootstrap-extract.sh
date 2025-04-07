@@ -85,6 +85,11 @@ echo "[INFO] Make Python binaries of extracted venv folders executable ..."
 find /internalworkspace/.venv/bin -type f -exec chmod +x {} \;
 ###########################################
 
+echo "[INFO] Forcing clean git state of this version of ComfyUI repository after extracting..."
+cd /internalworkspace/ComfyUI || exit 1
+git reset --hard HEAD
+cd /internalworkspace
+
 echo "[INFO] Cleaning up..."
 rm comfyui-venv.tar.zst
 
