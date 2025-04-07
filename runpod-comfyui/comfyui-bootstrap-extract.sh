@@ -85,10 +85,17 @@ echo "[INFO] Make Python binaries of extracted venv folders executable ..."
 find /internalworkspace/.venv/bin -type f -exec chmod +x {} \;
 ###########################################
 
+# Reset main ComfyUI repo
 echo "[INFO] Forcing clean git state of this version of ComfyUI repository after extracting..."
-cd /internalworkspace/ComfyUI || exit 1
+cd /internalworkspace/ComfyUI || { echo "[ERROR] Failed to cd into /internalworkspace/ComfyUI"; exit 1; }
 git reset --hard HEAD
-cd /internalworkspace
+cd /internalworkspace || { echo "[ERROR] Failed to cd back to /internalworkspace"; exit 1; }
+# Reset Custom Node repos (including potential submodules)
+echo "[INFO] Forcing clean git state in ComfyUI custom node repositories (and submodules)..."
+# Find all .git directories within custom_nodes at any depth
+# For each found .git directory, execute 'git reset --hard HEAD' in its parent directory
+find /internalworkspace/ComfyUI/custom_nodes -type d -name .git -execdir git reset --hard HEAD \; || echo "[WARN] Attempted git reset on custom nodes/submodules; some may have failed (this is often OK if directories are not git repos)."
+echo "[INFO] Custom node git repositories cleaned
 
 echo "[INFO] Cleaning up..."
 rm comfyui-venv.tar.zst
