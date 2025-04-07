@@ -158,12 +158,12 @@ snapshot_download(
 print(f"[INFO] Repo downloaded directly to: {local_dir}")
 EOF
 
-echo "[INFO] Downloading private Hugging Face model using hf_transfer..."
-python /internalworkspace/download-hf.py
+# echo "[INFO] Downloading private Hugging Face model using hf_transfer..."
+# python /internalworkspace/download-hf.py
 
-echo "[INFO] Organizing model directory..."
-rm -rf /internalworkspace/ComfyUI/models
-mv /internalworkspace/for-runpod-deploy/comfyui-models-folder /internalworkspace/ComfyUI/models
+# echo "[INFO] Organizing model directory..."
+# rm -rf /internalworkspace/ComfyUI/models
+# mv /internalworkspace/for-runpod-deploy/comfyui-models-folder /internalworkspace/ComfyUI/models
 
 echo "[INFO] Bootstrap completed. Deactivating virtual environment..."
 deactivate
