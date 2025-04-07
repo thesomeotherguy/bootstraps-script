@@ -10,7 +10,7 @@ chmod -R 755 /internalworkspace
 
 echo "[INFO] Updating and installing essential tools..."
 apt-get update -y
-apt-get install -y wget nano curl git cmake zstd
+apt-get install -y wget nano curl git cmake zstd tmux ncdu
 
 echo "[INFO] Installing 'uv' (Python packaging tool)..."
 wget -qO- https://astral.sh/uv/install.sh | bash
