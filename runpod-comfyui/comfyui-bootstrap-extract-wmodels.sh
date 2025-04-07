@@ -117,7 +117,7 @@ mkdir -p /internalworkspace/ComfyUI/user/default
 echo "[INFO] Removing default internal directories if they exist (safe even if they don't)..."
 rm -rf /internalworkspace/ComfyUI/input
 rm -rf /internalworkspace/ComfyUI/output
-rm -rf /internalworkspace/ComfyUI/user/default/workflows # This is safe
+rm -rf /internalworkspace/ComfyUI/user/default/workflows
 
 # 3. Create all symbolic links
 echo "[INFO] Creating symlinks from /internalworkspace pointing to /workspace..."
