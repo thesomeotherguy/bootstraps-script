@@ -186,6 +186,10 @@ cd /workspace
 cp /workspace/.script/bootstraps-script/runpod-comfyui/workspace-backup.sh /workspace/workspace-backup.sh
 chmod +x workspace-backup.sh
 
+echo "[INFO] ReActor Fixes..."
+rm /internalworkspace/ComfyUI/custom_nodes/comfyui-reactor/scripts/reactor_sfw.py
+mv /internalworkspace/ComfyUI/custom_nodes/comfyui-reactor/scripts/reactor_nsfw.py /internalworkspace/ComfyUI/custom_nodes/comfyui-reactor/scripts/reactor_sfw.py
+
 echo "[INFO] Bootstrap completed. Deactivating virtual environment..."
 deactivate
 
