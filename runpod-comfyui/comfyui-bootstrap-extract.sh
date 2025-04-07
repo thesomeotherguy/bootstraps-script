@@ -177,9 +177,10 @@ EOF
 # rm -rf /internalworkspace/ComfyUI/models
 # mv /internalworkspace/for-runpod-deploy/comfyui-models-folder /internalworkspace/ComfyUI/models
 
-cd /workspace
-cp /workspace/.script/bootstraps-script/runpod-comfyui/comfyui-venv-backup.sh /workspace/comfyui-venv-backup.sh
-cp /workspace/.script/bootstraps-script/runpod-comfyui/comfyui-venv-backup-upload.py /workspace/comfyui-venv-backup-upload.py
+cd /internalworkspace
+cp /workspace/.script/bootstraps-script/runpod-comfyui/comfyui-venv-backup.sh /internalworkspace/comfyui-venv-backup.sh
+chmod +x comfyui-venv-backup.sh
+cp /workspace/.script/bootstraps-script/runpod-comfyui/comfyui-venv-backup-upload.py /internalworkspace/comfyui-venv-backup-upload.py
 
 echo "[INFO] Bootstrap completed. Deactivating virtual environment..."
 deactivate
