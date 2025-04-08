@@ -71,19 +71,19 @@ tar --no-same-owner -I 'zstd -T0' -xf comfyui-venv.tar.zst -C /internalworkspace
 echo "[INFO] Set ownership of extracted ComfyUI + venv to root..."
 chown -R root:root /internalworkspace/ComfyUI /internalworkspace/.venv
 
-echo "[INFO] Set baseline directory and essential file permissions..."
-# Directories need execute bit for access (Applies to ComfyUI and .venv)
+echo "[INFO] Set directory and file permissions..."
+# Applies to ComfyUI and .venv directories
 find /internalworkspace/ComfyUI /internalworkspace/.venv -type d -exec chmod 755 {} \;
-# Files default to non-executable (Applies to ComfyUI and .venv). Git reset will fix tracked files later.
+# Applies to files inside ComfyUI and .venv
 find /internalworkspace/ComfyUI /internalworkspace/.venv -type f -exec chmod 644 {} \;
 
-echo "[INFO] Make specific scripts/binaries executable..."
-# Shell scripts in ComfyUI (optional, git reset might cover tracked ones, but safe for untracked)
+echo "[INFO] Make scripts/binaries executable..."
+# Shell scripts in ComfyUI directories
 find /internalworkspace/ComfyUI -name "*.sh" -exec chmod +x {} \;
-# Binaries/scripts in the venv (ESSENTIAL)
+# Binaries/scripts in .venv directories
 find /internalworkspace/.venv/bin -type f -exec chmod +x {} \;
 
-# Reset Git state to match the repo history (fixes tracked file permissions/modes)
+# Reset Git state to match the repo state (fixes file permissions/modes)
 echo "[INFO] Forcing clean git state in ComfyUI repository..."
 cd /internalworkspace/ComfyUI || { echo "[ERROR] Failed to cd into /internalworkspace/ComfyUI"; exit 1; }
 git reset --hard HEAD
