@@ -183,10 +183,6 @@ cd /workspace
 cp /workspace/.script/bootstraps-script/runpod-comfyui/workspace-backup.sh /workspace/workspace-backup.sh
 chmod +x workspace-backup.sh
 
-# echo "[INFO] ReActor Fixes..."
-# rm /internalworkspace/ComfyUI/custom_nodes/comfyui-reactor/scripts/reactor_sfw.py
-# mv /internalworkspace/ComfyUI/custom_nodes/comfyui-reactor/scripts/reactor_nsfw.py /internalworkspace/ComfyUI/custom_nodes/comfyui-reactor/scripts/reactor_sfw.py
-
 echo "[INFO] Configuring terminal to auto-attach FIRST terminal to tmux session 'comfyui'..."
 # Remove any previous auto-attach attempts from .bashrc if script runs multiple times
 # Using '#' as delimiter for sed to avoid conflict with paths if they were used
