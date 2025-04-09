@@ -147,7 +147,7 @@ cd /workspace
 cp /workspace/.script/bootstraps-script/runpod-comfyui/workspace-backup.sh /workspace/workspace-backup.sh
 chmod +x workspace-backup.sh
 cp /workspace/.script/bootstraps-script/runpod-comfyui/show-comfyui-console.sh /workspace/show-comfyui-console.sh
-chmod +x show-comfyui-console.sh
+chmod +x show-comfyui-console.sh # basically just `tmux attach -t comfyui`
 
 echo "[INFO] Configuring tmux for mouse support..."
 # Define the tmux config file path explicitly for clarity
