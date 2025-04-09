@@ -184,6 +184,22 @@ cd /workspace
 cp /workspace/.script/bootstraps-script/runpod-comfyui/workspace-backup.sh /workspace/workspace-backup.sh
 chmod +x workspace-backup.sh
 
+echo "[INFO] Configuring tmux for mouse support..."
+# Define the tmux config file path explicitly for clarity
+TMUX_CONF_FILE="/root/.tmux.conf"
+# Check if the mouse setting already exists to avoid duplicates
+# -q: quiet (no output), -x: match whole line exactly, -F: treat pattern as fixed string
+# Redirect grep error output (e.g., file not found) to /dev/null
+if ! grep -qxF 'set -g mouse on' "$TMUX_CONF_FILE" 2>/dev/null; then
+    # Ensure the directory exists (though /root should always exist)
+    mkdir -p "$(dirname "$TMUX_CONF_FILE")"
+    # Append the setting to the file
+    echo 'set -g mouse on' >> "$TMUX_CONF_FILE"
+    echo "[INFO] Added 'set -g mouse on' to $TMUX_CONF_FILE"
+else
+    echo "[INFO] 'set -g mouse on' already exists in $TMUX_CONF_FILE."
+fi
+
 echo "[INFO] Configuring terminal to auto-attach FIRST terminal to tmux session 'comfyui'..."
 # Remove any previous auto-attach attempts from .bashrc if script runs multiple times
 # Using '#' as delimiter for sed to avoid conflict with paths if they were used
