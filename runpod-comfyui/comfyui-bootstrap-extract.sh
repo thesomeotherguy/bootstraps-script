@@ -64,7 +64,7 @@ cd /internalworkspace
 rm -rf /internalworkspace/.venv
       
 ###########################################
-echo "[INFO] Extracting comfyui.tar.zst ..."
+echo "[INFO] Extracting comfyui-venv.tar.zst ..."
 cd /internalworkspace
 tar --no-same-owner -I 'zstd -T0' -xf comfyui-venv.tar.zst -C /internalworkspace/
 
