@@ -59,7 +59,7 @@ EOF
 echo "[INFO] Running download script..."
 python /internalworkspace/download-single-hf.py
 
-echo "[INFO] Deactivate and Remove initial virtual environment..."
+echo "[INFO] Deactivate and remove initial huggingface_hub virtual environment..."
 deactivate
 cd /internalworkspace
 rm -rf /internalworkspace/.venv
