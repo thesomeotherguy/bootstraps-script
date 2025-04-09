@@ -19,12 +19,12 @@ echo "[INFO] Updating PATH for uv..."
 export PATH="$HOME/.local/bin:$PATH"
 hash -r
 
-echo "[INFO] Installing Python 3.12 using uv and setting up virtual environment..."
+echo "[INFO] Installing Python 3.12 using uv and setting up virtual environment, only for huggingface_hub HF backup download..."
 uv python install 3.12
 uv venv --python 3.12
 source .venv/bin/activate
 
-echo "[INFO] Installing Hugging Face CLI and setting up authentication..."
+echo "[INFO] Installing huggingface_hub CLI and HF Transfer..."
 uv pip install --upgrade huggingface_hub
 uv pip install 'huggingface_hub[cli]' 'huggingface_hub[hf_transfer]'
 git config --global credential.helper store
@@ -59,12 +59,13 @@ EOF
 echo "[INFO] Running download script..."
 python /internalworkspace/download-single-hf.py
 
+echo "[INFO] Deactivate and remove initial huggingface_hub virtual environment..."
 deactivate
 cd /internalworkspace
 rm -rf /internalworkspace/.venv
       
 ###########################################
-echo "[INFO] Extracting comfyui-venv.tar.zst ..."
+echo "[INFO] Placing ComfyUI webapp and replacing virtual environment by extracting comfyui-venv.tar.zst ..."
 cd /internalworkspace
 tar --no-same-owner -I 'zstd -T0' -xf comfyui-venv.tar.zst -C /internalworkspace/
 
