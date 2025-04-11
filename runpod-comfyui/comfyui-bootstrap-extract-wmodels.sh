@@ -146,6 +146,7 @@ ls -ld \
     /workspace/workflows
 
 echo "[INFO] Installing huggingface_hub CLI and HF Transfer..."
+cd /internalworkspace
 source .venv/bin/activate
 uv pip install --upgrade huggingface_hub
 uv pip install 'huggingface_hub[cli]' 'huggingface_hub[hf_transfer]'
