@@ -88,7 +88,6 @@ deactivate
 cd /internalworkspace
 rm -rf /internalworkspace/.venv
       
-###########################################
 echo "[INFO] Placing ComfyUI webapp and replacing virtual environment by extracting comfyui-venv.tar.zst ..."
 cd /internalworkspace
 tar --no-same-owner -I 'zstd -T0' -xf comfyui-venv.tar.zst -C /internalworkspace/
@@ -124,7 +123,6 @@ echo "[INFO] Git repositories cleaned."
 
 echo "[INFO] Cleaning up..."
 rm comfyui-venv.tar.zst
-###########################################
 
 echo "[INFO] Creating run script in /workspace..."
 mkdir -p /workspace
