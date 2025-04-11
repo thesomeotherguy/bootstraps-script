@@ -175,6 +175,9 @@ EOF
 echo "[INFO] Downloading private Hugging Face model using hf_transfer..."
 python /internalworkspace/download-hf.py
 
+echo "[INFO] Deactivating virtual environment..."
+deactivate
+
 echo "[INFO] Organizing model directory..."
 rm -rf /internalworkspace/ComfyUI/models
 mv /internalworkspace/for-runpod-deploy/comfyui-models-folder /internalworkspace/ComfyUI/models
@@ -231,8 +234,5 @@ if command -v tmux &> /dev/null && tmux has-session -t comfyui 2>/dev/null; then
 fi # End command/session check
 # END TMUX AUTO ATTACH
 EOF
-
-echo "[INFO] Bootstrap completed. Deactivating virtual environment..."
-deactivate
 
 echo "[DONE] All setup tasks completed successfully."
