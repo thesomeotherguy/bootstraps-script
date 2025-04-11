@@ -98,8 +98,6 @@ echo "[INFO] Git repositories cleaned."
 echo "[INFO] Cleaning up..."
 rm comfyui-venv.tar.zst
 
-source .venv/bin/activate
-
 echo "[INFO] Creating run script in /workspace..."
 mkdir -p /workspace
 cat << 'EOF' > /workspace/run_gpu.sh
@@ -146,6 +144,11 @@ ls -ld \
     /workspace/input \
     /workspace/output \
     /workspace/workflows
+
+echo "[INFO] Installing huggingface_hub CLI and HF Transfer..."
+source .venv/bin/activate
+uv pip install --upgrade huggingface_hub
+uv pip install 'huggingface_hub[cli]' 'huggingface_hub[hf_transfer]'
 
 echo "[INFO] Creating script to download model from Hugging Face..."
 cat << 'EOF' > /internalworkspace/download-hf.py
