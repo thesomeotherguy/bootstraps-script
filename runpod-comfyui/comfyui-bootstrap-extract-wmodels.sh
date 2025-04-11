@@ -60,7 +60,7 @@ echo "[INFO] Running download comfyui-venv.tar.zst script..."
 python /internalworkspace/download-single-hf.py
 
 echo "[INFO] Creating script to download models from Hugging Face..."
-cat << 'EOF' > /internalworkspace/download-hf.py
+cat << 'EOF' > /internalworkspace/download-hf-comfyui-models.py
 from huggingface_hub import snapshot_download
 import os
 
@@ -81,7 +81,7 @@ print(f"[INFO] Repo downloaded directly to: {local_dir}")
 EOF
 
 echo "[INFO] Downloading private Hugging Face model using hf_transfer..."
-python /internalworkspace/download-hf.py
+python /internalworkspace/download-hf-comfyui-models.py
 
 echo "[INFO] Deactivate and remove initial huggingface_hub virtual environment..."
 deactivate
@@ -92,6 +92,10 @@ rm -rf /internalworkspace/.venv
 echo "[INFO] Placing ComfyUI webapp and replacing virtual environment by extracting comfyui-venv.tar.zst ..."
 cd /internalworkspace
 tar --no-same-owner -I 'zstd -T0' -xf comfyui-venv.tar.zst -C /internalworkspace/
+
+echo "[INFO] Organizing models directory..."
+rm -rf /internalworkspace/ComfyUI/models
+mv /internalworkspace/for-runpod-deploy/comfyui-models-folder /internalworkspace/ComfyUI/models
 
 echo "[INFO] Set ownership of extracted ComfyUI + venv to root..."
 chown -R root:root /internalworkspace/ComfyUI /internalworkspace/.venv
@@ -117,14 +121,10 @@ cd /internalworkspace || { echo "[ERROR] Failed to cd back to /internalworkspace
 echo "[INFO] Forcing clean git state in ComfyUI custom node repositories (and submodules)..."
 find /internalworkspace/ComfyUI/custom_nodes -type d -name .git -execdir git reset --hard HEAD \; || echo "[WARN] Attempted git reset; some may have failed."
 echo "[INFO] Git repositories cleaned."
-###########################################
 
 echo "[INFO] Cleaning up..."
 rm comfyui-venv.tar.zst
-
-echo "[INFO] Organizing model directory..."
-rm -rf /internalworkspace/ComfyUI/models
-mv /internalworkspace/for-runpod-deploy/comfyui-models-folder /internalworkspace/ComfyUI/models
+###########################################
 
 echo "[INFO] Creating run script in /workspace..."
 mkdir -p /workspace
