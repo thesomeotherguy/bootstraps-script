@@ -80,7 +80,7 @@ snapshot_download(
 print(f"[INFO] Repo downloaded directly to: {local_dir}")
 EOF
 
-echo "[INFO] Downloading private Hugging Face model using hf_transfer..."
+echo "[INFO] Downloading private Hugging Face models using hf_transfer..."
 python /internalworkspace/download-hf-comfyui-models.py
 
 echo "[INFO] Deactivate and remove initial huggingface_hub virtual environment..."
