@@ -56,18 +56,45 @@ file_path = hf_hub_download(
 print(f"[INFO] File downloaded to: {file_path}")
 EOF
 
-echo "[INFO] Running download script..."
+echo "[INFO] Running download comfyui-venv.tar.zst script..."
 python /internalworkspace/download-single-hf.py
+
+echo "[INFO] Creating script to download models from Hugging Face..."
+cat << 'EOF' > /internalworkspace/download-hf-comfyui-models.py
+from huggingface_hub import snapshot_download
+import os
+
+repo_id = "thesomeotherguy/for-runpod-deploy"
+token = os.getenv("HUGGINGFACE_TOKEN")
+local_dir = "./for-runpod-deploy"
+repo_type = "model"
+
+snapshot_download(
+    repo_id=repo_id,
+    repo_type=repo_type,
+    token=token,
+    local_dir=local_dir,
+    ignore_patterns=["*.py", "*.md", "*.sh", "*.tar.zst", "*.zst"],
+)
+
+print(f"[INFO] Repo downloaded directly to: {local_dir}")
+EOF
+
+# echo "[INFO] Downloading private Hugging Face models using hf_transfer..."
+# python /internalworkspace/download-hf-comfyui-models.py
 
 echo "[INFO] Deactivate and remove initial huggingface_hub virtual environment..."
 deactivate
 cd /internalworkspace
 rm -rf /internalworkspace/.venv
       
-###########################################
 echo "[INFO] Placing ComfyUI webapp and replacing virtual environment by extracting comfyui-venv.tar.zst ..."
 cd /internalworkspace
 tar --no-same-owner -I 'zstd -T0' -xf comfyui-venv.tar.zst -C /internalworkspace/
+
+# echo "[INFO] Organizing models directory..."
+# rm -rf /internalworkspace/ComfyUI/models
+# mv /internalworkspace/for-runpod-deploy/comfyui-models-folder /internalworkspace/ComfyUI/models
 
 echo "[INFO] Set ownership of extracted ComfyUI + venv to root..."
 chown -R root:root /internalworkspace/ComfyUI /internalworkspace/.venv
@@ -93,7 +120,6 @@ cd /internalworkspace || { echo "[ERROR] Failed to cd back to /internalworkspace
 echo "[INFO] Forcing clean git state in ComfyUI custom node repositories (and submodules)..."
 find /internalworkspace/ComfyUI/custom_nodes -type d -name .git -execdir git reset --hard HEAD \; || echo "[WARN] Attempted git reset; some may have failed."
 echo "[INFO] Git repositories cleaned."
-###########################################
 
 echo "[INFO] Cleaning up..."
 rm comfyui-venv.tar.zst
@@ -144,43 +170,6 @@ ls -ld \
     /workspace/input \
     /workspace/output \
     /workspace/workflows
-
-echo "[INFO] Installing huggingface_hub CLI and HF Transfer..."
-cd /internalworkspace
-source .venv/bin/activate
-uv pip install --upgrade huggingface_hub
-uv pip install 'huggingface_hub[cli]' 'huggingface_hub[hf_transfer]'
-
-echo "[INFO] Creating script to download model from Hugging Face..."
-cat << 'EOF' > /internalworkspace/download-hf.py
-from huggingface_hub import snapshot_download
-import os
-
-repo_id = "thesomeotherguy/for-runpod-deploy"
-token = os.getenv("HUGGINGFACE_TOKEN")
-local_dir = "./for-runpod-deploy"
-repo_type = "model"
-
-snapshot_download(
-    repo_id=repo_id,
-    repo_type=repo_type,
-    token=token,
-    local_dir=local_dir,
-    ignore_patterns=["*.py", "*.md", "*.sh", "*.tar.zst", "*.zst"],
-)
-
-print(f"[INFO] Repo downloaded directly to: {local_dir}")
-EOF
-
-# echo "[INFO] Downloading private Hugging Face model using hf_transfer..."
-# python /internalworkspace/download-hf.py
-
-echo "[INFO] Deactivating virtual environment..."
-deactivate
-
-# echo "[INFO] Organizing model directory..."
-# rm -rf /internalworkspace/ComfyUI/models
-# mv /internalworkspace/for-runpod-deploy/comfyui-models-folder /internalworkspace/ComfyUI/models
 
 echo "[INFO] Copying backup and upload scripts..."
 cd /internalworkspace
