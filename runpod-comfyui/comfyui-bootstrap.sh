@@ -21,21 +21,22 @@ hash -r
 
 echo "[INFO] Installing Python 3.12 using uv and setting up virtual environment..."
 uv python install 3.12
-uv venv --python 3.12
+# uv venv --python 3.12
+uv venv --seed
 source .venv/bin/activate
 
-echo "[INFO] Aliasing pip to 'uv pip' and modifying pip behavior inside venv..."
-mkdir -p .venv/lib/python3.12/site-packages/pip
-cat << 'EOF' > .venv/lib/python3.12/site-packages/pip/__main__.py
-import sys, subprocess, os.path
-if __package__ is None and not getattr(sys, 'frozen', False):
-    path = os.path.realpath(os.path.abspath(__file__))
-    sys.path.insert(0, os.path.dirname(os.path.dirname(path)))
-if __name__ == '__main__':
-    ls=['uv', 'pip'] + sys.argv[1:]
-    subprocess.check_call(ls)
-EOF
-chmod +x .venv/lib/python3.12/site-packages/pip/__main__.py
+# echo "[INFO] Aliasing pip to 'uv pip' and modifying pip behavior inside venv..."
+# mkdir -p .venv/lib/python3.12/site-packages/pip
+# cat << 'EOF' > .venv/lib/python3.12/site-packages/pip/__main__.py
+# import sys, subprocess, os.path
+# if __package__ is None and not getattr(sys, 'frozen', False):
+#     path = os.path.realpath(os.path.abspath(__file__))
+#     sys.path.insert(0, os.path.dirname(os.path.dirname(path)))
+# if __name__ == '__main__':
+#     ls=['uv', 'pip'] + sys.argv[1:]
+#     subprocess.check_call(ls)
+# EOF
+# chmod +x .venv/lib/python3.12/site-packages/pip/__main__.py
 
 echo "[INFO] Installing Hugging Face CLI and setting up authentication..."
 uv pip install --upgrade huggingface_hub
