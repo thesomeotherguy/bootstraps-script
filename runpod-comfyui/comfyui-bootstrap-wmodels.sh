@@ -54,8 +54,11 @@ cd /internalworkspace
 uv pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu126
 uv pip install -r ComfyUI/requirements.txt
 uv pip install -r ComfyUI/custom_nodes/comfyui-manager/requirements.txt
-uv pip install /workspace/.script/bootstraps-script/pip-wheels/dlib/dlib-19.24.6-cp312-cp312-linux_x86_64.whl
-uv pip install /workspace/.script/bootstraps-script/pip-wheels/dlib/insightface/insightface-0.7.3-cp312-cp312-linux_x86_64.whl
+cd /workspace/.script/bootstraps-script/pip-wheels/dlib && uv pip install dlib-19.24.6-cp312-cp312-linux_x86_64.whl
+cd /workspace/.script/bootstraps-script/pip-wheels/insightface && uv pip install insightface-0.7.3-cp312-cp312-linux_x86_64.whl
+cd /internalworkspace
+uv pip uninstall onnxruntime onnxruntime-gpu
+uv pip install onnxruntime-gpu --extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/
 
 echo "[INFO] Creating run script in /workspace..."
 mkdir -p /workspace
