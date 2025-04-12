@@ -54,8 +54,8 @@ cd /internalworkspace
 uv pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu126
 uv pip install -r ComfyUI/requirements.txt
 uv pip install -r ComfyUI/custom_nodes/comfyui-manager/requirements.txt
-uv pip install /workspace/.script/bootstraps-script/runpod-comfyui/dlib/dlib-19.24.6-cp312-cp312-linux_x86_64.whl
-uv pip install /workspace/.script/bootstraps-script/runpod-comfyui/dlib/insightface/insightface-0.7.3-cp312-cp312-linux_x86_64.whl
+uv pip install /workspace/.script/bootstraps-script/pip-wheels/dlib/dlib-19.24.6-cp312-cp312-linux_x86_64.whl
+uv pip install /workspace/.script/bootstraps-script/pip-wheels/dlib/insightface/insightface-0.7.3-cp312-cp312-linux_x86_64.whl
 
 echo "[INFO] Creating run script in /workspace..."
 mkdir -p /workspace
