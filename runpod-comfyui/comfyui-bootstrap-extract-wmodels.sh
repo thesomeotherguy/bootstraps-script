@@ -21,7 +21,8 @@ hash -r
 
 echo "[INFO] Installing Python 3.12 using uv and setting up virtual environment, only for huggingface_hub HF backup download..."
 uv python install 3.12
-uv venv --python 3.12
+# uv venv --python 3.12
+uv venv --seed
 source .venv/bin/activate
 
 echo "[INFO] Installing huggingface_hub CLI and HF Transfer..."
