@@ -73,6 +73,39 @@ EOF
 
 chmod +x /workspace/run_gpu.sh
 
+echo "[INFO] Setting up ComfyUI Manager configuration file"
+
+# Ensure the target directory exists.
+mkdir -p "/internalworkspace/ComfyUI/user/default/ComfyUI-Manager"
+# If the config file exists, move it to backup. Overwrites previous backup.
+if [[ -f "/internalworkspace/ComfyUI/user/default/ComfyUI-Manager/config.ini" ]]; then
+  echo "[INFO] Backing up existing config.ini..."
+  mv -f "/internalworkspace/ComfyUI/user/default/ComfyUI-Manager/config.ini" "/internalworkspace/ComfyUI/user/default/ComfyUI-Manager/config.ini.backup"
+fi
+# Create the new configuration file
+echo "[INFO] Creating config.ini..."
+cat << 'EOF' > "/internalworkspace/ComfyUI/user/default/ComfyUI-Manager/config.ini"
+[default]
+preview_method = latent2rgb
+git_exe =
+use_uv = True
+channel_url = https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main
+share_option = all
+bypass_ssl = False
+file_logging = True
+component_policy = workflow
+update_policy = stable-comfyui
+windows_selector_event_loop_policy = False
+model_download_by_agent = False
+downgrade_blacklist =
+security_level = normal
+always_lazy_install = False
+network_mode = public
+db_mode = cache
+EOF
+
+echo "[INFO] ComfyUI Manager config setup complete."
+
 echo "[INFO] Reconfiguring ComfyUI directory symlinks..."
 
 # 1. Ensure all necessary directories exist
