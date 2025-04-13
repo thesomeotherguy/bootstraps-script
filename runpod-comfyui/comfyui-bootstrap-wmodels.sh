@@ -149,31 +149,47 @@ echo "[INFO] Enabling hf_transfer for faster Hugging Face downloads..."
 export HF_HUB_ENABLE_HF_TRANSFER=1
 echo 'export HF_HUB_ENABLE_HF_TRANSFER=1' >> ~/.bashrc
 
-echo "[INFO] Creating script to download model from Hugging Face..."
-cat << 'EOF' > /internalworkspace/download-hf.py
+echo "[INFO] Creating script to download models from Hugging Face..."
+cat << 'EOF' > /internalworkspace/download-hf-comfyui-models.py
 from huggingface_hub import snapshot_download
 import os
+# Logging setup removed
 
 repo_id = "thesomeotherguy/for-runpod-deploy"
 token = os.getenv("HUGGINGFACE_TOKEN")
 local_dir = "./for-runpod-deploy"
 repo_type = "model"
 
-snapshot_download(
-    repo_id=repo_id,
-    repo_type=repo_type,
-    token=token,
-    local_dir=local_dir,
-    ignore_patterns=["*.py", "*.md", "*.sh", "*.tar.zst", "*.zst"],
-)
+# --- Define patterns to ignore ---
+ignore_list = ["*.py", "*.md", "*.txt", "*.sh", "*.tar.zst", "*.zst"]
 
-print(f"[INFO] Repo downloaded directly to: {local_dir}")
+# --- Add specific folder exclusions ---
+# ignore_list.append("comfyui-models-folder/checkpoints/SDXL/*")
+# ignore_list.append("comfyui-models-folder/controlnet/**")
+# ignore_list.append("comfyui-models-folder/clip_vision/**")
+# ignore_list.append("comfyui-models-folder/inpaint/**")
+# ignore_list.append("comfyui-models-folder/diffusion_models/**")
+
+print(f"[DEBUG] Using ignore patterns: {ignore_list}")
+
+print(f"[INFO] Starting snapshot download for repo '{repo_id}'...")
+try:
+    snapshot_download(
+        repo_id=repo_id,
+        repo_type=repo_type,
+        token=token,
+        local_dir=local_dir,
+        ignore_patterns=ignore_list
+    )
+    print(f"[INFO] Repo download attempt completed for '{repo_id}'. Check output above for details/errors.")
+except Exception as e:
+    print(f"[ERROR] An exception occurred during snapshot_download: {e}")
 EOF
 
-echo "[INFO] Downloading private Hugging Face model using hf_transfer..."
-python /internalworkspace/download-hf.py
+echo "[INFO] Downloading private Hugging Face models using hf_transfer..."
+python /internalworkspace/download-hf-comfyui-models.py
 
-echo "[INFO] Organizing model directory..."
+echo "[INFO] Organizing models directory..."
 rm -rf /internalworkspace/ComfyUI/models
 mv /internalworkspace/for-runpod-deploy/comfyui-models-folder /internalworkspace/ComfyUI/models
 
